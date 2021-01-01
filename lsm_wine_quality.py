@@ -11,26 +11,15 @@ df_test = df[int(len(df)/3*2):]
 
 target = "quality"
 features = ["fixed acidity", "volatile acidity", "citric acid", "residual sugar", "chlorides", "free sulfur dioxide", "total sulfur dioxide", "density", "pH", "sulphates", "alcohol"]
+
 y = df_train[target].to_numpy().astype(np.float64)
 g = df_train[features].to_numpy()
-
-n = len(features)
-means = np.zeros(n)
-y_mean = np.mean(y)
-y -= y_mean
-
-for i in range(n):
-    means[i] = np.mean(g[:,i])
-    g[:,i] = g[:,i] - means[i]
-
+g = np.insert(g, 0, 1, axis=1)
 a = lin.inv(g.T @ g) @ g.T @ y
 
-# evaluation
-g = df_test[features].to_numpy()
-for i in range(n):
-    g[:,i] -= means[i]
-estimate = g @ a + y_mean
-real = df_test[target].to_numpy()
+y_test = df_test[target].to_numpy().astype(np.float64)
+g_test = df_test[features].to_numpy()
+g_test = np.insert(g_test, 0, 1, axis=1)
 
-print(estimate)
-print(np.mean(np.sqrt((real - estimate)**2)))
+r2 = 1 - np.sum(np.power(y_test - g_test @ a, 2)) / np.sum(np.power(y - np.mean(y), 2))
+print(r2)
