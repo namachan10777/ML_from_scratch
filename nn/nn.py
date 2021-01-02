@@ -25,3 +25,15 @@ def update(X, y, w, b, eta):
     w -= eta * 1/float(len(y))*np.sum(a*X,axis=0)
     b -= eta * 1/float(len(y))*np.sum(a)
     return w,b
+
+def init(input_size, output_size, layers):
+    s_i = input_size
+    ws = []
+    bs = [np.ones(input_size)/10]
+    layers = layers.copy()
+    layers.append(output_size)
+    for layer in layers:
+        ws.append(np.ones([s_i, layer])/10)
+        bs.append(np.ones(layer)/10)
+        s_i = layer
+    return ws, bs

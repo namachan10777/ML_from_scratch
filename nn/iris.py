@@ -16,17 +16,8 @@ X_test[:10],X_test[10:] = X[40:50],X[90:100]
 y_train[:40],y_train[40:] = y[:40],y[50:90]
 y_test[:10],y_test[10:] = y[40:50],y[90:100]
 
-print(X_train)
-print(X_test)
-print(y_train)
-print(y_test)
+ws, bs = nn.init(4, 1, [3,3])
 
-w = np.ones(4)/10
-b = np.ones(1)/10
-
-for _ in range(100):
-    w, b = nn.update(X_train, y_train, w, b, eta=0.1)
-    print(f'acc {nn.accuracy(X_test, y_test, w, b)} loss {nn.loss(X_train, y_train, w, b)}')
-
-print(w)
-print(b)
+print(ws)
+print(bs)
+print(nn.sigmoid(np.add(np.dot(X_train, ws[0]), bs[1])))
