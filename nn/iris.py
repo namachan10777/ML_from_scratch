@@ -73,7 +73,7 @@ def update(X, y, ws, bs, eta):
     y = y.reshape(-1,1)
     hs, xs = run(X, ws, bs)
     d = delta_out(y, xs[-1], hs[-1])
-    for n in range(len(ws)):
+    for n in reversed(range(len(ws))):
         w_ = np.copy(ws[n])
         b_ = np.copy(bs[n])
         J, I = ws[n].shape
