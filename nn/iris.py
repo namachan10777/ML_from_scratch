@@ -2,28 +2,8 @@ import pandas as pd
 import numpy as np
 import copy
 
-df = pd.read_csv("./dataset/iris/iris.data", header=None)
-y = df.iloc[0:100,4].values
-y = np.where(y=='Iris-setosa',-1,1)
-X = df.iloc[0:100,[0,1,2,3]].values
-
-X_train = np.empty((80,4))
-X_test = np.empty((20,4))
-y_train = np.empty(80)
-y_test = np.empty(20)
-X_train[:40],X_train[40:] = X[:40],X[50:90]
-X_test[:10],X_test[10:] = X[40:50],X[90:100]
-y_train[:40],y_train[40:] = y[:40],y[50:90]
-y_test[:10],y_test[10:] = y[40:50],y[90:100]
-
 def sigmoid(x):
     return 1/(1+np.exp(-x))
-
-w0 = np.ones([4,2])/10
-b0 = np.ones([1,2])/10
-w1 = np.ones([2,1])/10
-b0 = np.ones([1,1])
-
 
 # y = x
 def g_out(x):
@@ -87,24 +67,49 @@ def update(X, y, ws, bs, eta):
     e = err(y, hs[-1])
     return (ws, bs, e)
 
-w0 = np.array([[0.0, 0.0]])
-b0 = np.array([1.0])
-ws = [w0]
-bs = [b0]
+w0 = np.array([[1.0, -1.0, 1.0, -1.0], [-1.0,1.0,-1.0,1.0]])
+w1 = np.array([[1.0, -1.0]])
+b0 = np.array([0.1, -0.1])
+b1 = np.array([0.1])
+ws = [w0, w1]
+bs = [b0, b1]
 
-X_train = np.empty([25,2])
-y_train = np.empty(25)
-for i in range(5):
-    for j in range(5):
-        X_train[i*5+j,0] = i
-        X_train[i*5+j,1] = j
-        y_train[i*5+j] = i+j
-print(X_train)
-print(y_train)
+#X_train = np.empty([25,2])
+#y_train = np.empty(25)
+#for i in range(5):
+#    for j in range(5):
+#        X_train[i*5+j,0] = i
+#        X_train[i*5+j,1] = j
+#        y_train[i*5+j] = i+j
+#print(X_train)
+#print(y_train)
 
-for _ in range(100):
-    ws, bs, e = update(X_train, y_train, ws, bs, 0.1)
-    print(f'err {e}')
+# iris specific
+
+df = pd.read_csv("./dataset/iris/iris.data", header=None)
+y = df.iloc[0:100,4].values
+y = np.where(y=='Iris-setosa',-1,1)
+X = df.iloc[0:100,[0,1,2,3]].values
+
+X_train = np.empty((80,4))
+X_test = np.empty((20,4))
+y_train = np.empty(80)
+y_test = np.empty(20)
+X_train[:40],X_train[40:] = X[:40],X[50:90]
+X_test[:10],X_test[10:] = X[40:50],X[90:100]
+y_train[:40],y_train[40:] = y[:40],y[50:90]
+y_test[:10],y_test[10:] = y[40:50],y[90:100]
+
+def predict(X, ws, bs):
+    _, xs = run(X, ws, bs)
+    return np.where(xs[-1] < 0,-1,1)
+
+def accuracy(X, ws, bs, y):
+    return np.count_nonzero(predict(X, ws, bs) == y.reshape(-1,1)) / float(len(y))
+
+for _ in range(1000):
+    ws, bs, e = update(X_train, y_train, ws, bs, 0.03)
+    print(f'err {e} {accuracy(X_test, ws, bs, y_test)}')
 
 print(ws)
 print(bs)
